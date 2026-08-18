@@ -1,7 +1,8 @@
 # TakeMeter — Art & Craft Community Discourse Classifier
-### AI201 · Project 3
-
+### CodePath AI201 · Project 3
 ---
+
+Developed as part of CodePath’s AI201 course using a provided fine-tuning notebook framework; my work focused on dataset creation and annotation, label taxonomy design, zero-shot baseline development, model evaluation, and error analysis.
 
 ## Community
 
