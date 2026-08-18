@@ -2,7 +2,7 @@
 ### CodePath AI201 · Project 3
 ---
 
-Developed as part of CodePath’s AI201 course using a provided fine-tuning notebook framework; my work focused on dataset creation and annotation, label taxonomy design, zero-shot baseline development, model evaluation, and error analysis.
+Developed as part of CodePath’s AI201 course using a provided fine-tuning notebook framework; my work focused on dataset creation and annotation, label taxonomy design, few-shot LLM baseline development, model evaluation, and error analysis.
 
 ## Community
 
@@ -91,9 +91,9 @@ The `technical_help` dominance (~41%) reflects the natural composition of craft 
 
 ## Baseline
 
-**Model:** `llama-3.3-70b-versatile` via Groq API, zero-shot (no examples, no fine-tuning).
+**Model:** `llama-3.3-70b-versatile` via Groq API, few-shot (no fine-tuning).
 
-**Prompt approach:** System prompt containing all four label definitions, one real example per label, and the three decision rules from the label taxonomy (the `showcase_reaction` vs. `critique_feedback` boundary rule, the troubleshooting vs. appraisal rule, and the actionable-advice vs. meta-opinion rule). Temperature 0, max_tokens 20 to force clean label output.
+**Prompt approach:** System prompt containing all four label definitions, one real example per label, and the three decision rules from the label taxonomy. Temperature 0 and max_tokens=20 were used to encourage consistent label-only output.
 
 **Parseable responses:** 32/32 (100% — the constrained output format worked cleanly).
 
@@ -105,11 +105,11 @@ The `technical_help` dominance (~41%) reflects the natural composition of craft 
 
 | Model | Accuracy |
 |---|---|
-| Zero-shot baseline (Groq llama-3.3-70b-versatile) | **0.906** |
+| Few-shot LLM baseline (Groq llama-3.3-70b-versatile) | **0.906** |
 | Fine-tuned DistilBERT | **0.500** |
 | Difference | -0.406 (regression) |
 
-The fine-tuned model performed substantially *worse* than the zero-shot baseline. This is the most important finding in this project and is analyzed in depth below.
+The fine-tuned model performed substantially *worse* than the Groq baseline. This is the most important finding in this project and is analyzed in depth below.
 
 ### Per-Class Metrics — Baseline (Groq)
 
@@ -127,7 +127,7 @@ The fine-tuned model performed substantially *worse* than the zero-shot baseline
 
 | Label | Precision | Recall | F1 | Support |
 |---|---|---|---|---|
-| technical_help | ~0.50 | 1.00 | ~0.67 | 13 |
+| technical_help | ~0.45 | 1.00 | ~0.62 | 13 |
 | showcase_reaction | ~1.00 | 0.43 | ~0.60 | 7 |
 | critique_feedback | 0.00 | 0.00 | 0.00 | 6 |
 | meta_opinion | 0.00 | 0.00 | 0.00 | 6 |
@@ -153,7 +153,7 @@ The pattern is stark: the model learned to predict `technical_help` for everythi
 
 > *"Should I add a disclaimer that I don't endorse the technique displayed in the video?"*
 
-This post uses a question mark, which in the training data is almost exclusively a `technical_help` marker ("What am I doing wrong?", "Is the pattern wrong or me?", "Can you tell us the name?"). The model has learned that questions = `technical_help`, which holds for ~90% of questions in the dataset. This post is a rare exception — a rhetorical question expressing community-norm anxiety rather than requesting procedural help. The model can't distinguish this because the syntactic form is identical to a genuine help-request. Fixing it would require more `meta_opinion` examples that happen to use question form.
+This post uses a question mark, a form that was heavily associated with `technical_help` in the training data (“What am I doing wrong?”, “Is the pattern wrong or me?”, “Can you tell us the name?”). The rhetorical question is therefore a difficult exception because it resembles a genuine help request syntactically while functioning as `meta_opinion`.
 
 **Error #2: `critique_feedback` → `technical_help` (confidence: 0.28)**
 
@@ -165,7 +165,7 @@ This is a clear and specific critique of a painting's structural execution. But 
 
 > *"I like how the cucumber looks. Here is my attempt at the cucumber plant. It's 9x12 on 140 lb wc paper."*
 
-The phrase "140 lb wc paper" is a material specification. In the training data, material specs appear almost exclusively in `technical_help` posts ("I'd use either acrylic or cotton yarn," "Rule #1 for Tunisian: Go up at least two hook sizes"). The model has latched onto this pattern and fires `technical_help` whenever it sees material vocabulary, regardless of whether the post is sharing work or troubleshooting. One technical noun in an otherwise showcase post is enough to tip the prediction.
+The phrase "140 lb wc paper" is a material specification. In the training data, material specs frequently appear in `technical_help` posts ("I'd use either acrylic or cotton yarn," "Rule #1 for Tunisian: Go up at least two hook sizes"). The model has latched onto this pattern and fires `technical_help` whenever it sees material vocabulary, regardless of whether the post is sharing work or troubleshooting. One technical noun in an otherwise showcase post is enough to tip the prediction.
 
 ### Reflection: What the Model Learned vs. What I Intended
 
@@ -176,28 +176,27 @@ More specifically, the model learned surface lexical heuristics:
 - Technical/craft vocabulary (yarn names, paper weights, stitch names) → `technical_help`
 - Warm adjectives ("lovely," "beautiful," "delicately") → `showcase_reaction`
 
-It completely failed to learn `critique_feedback` and `meta_opinion` — two classes that share vocabulary with `technical_help` but differ in discourse function. The key insight is that these boundaries are **structural and contextual**, not lexical. Whether a post is `critique_feedback` vs. `technical_help` depends on what the post is *responding to* (a finished work vs. a reported problem), not what words it contains. DistilBERT, trained on isolated post text with no conversational context, can't see that distinction.
+It completely failed to learn `critique_feedback` and `meta_opinion` — two classes that share vocabulary with `technical_help` but differ in discourse function. The key insight is that these boundaries are **structural and contextual**, not lexical. Whether a post is `critique_feedback` vs. `technical_help` depends on what the post is *responding to* (a finished work vs. a reported problem), not what words it contains. DistilBERT, trained only on isolated post text, lacked the conversational context that may have helped distinguish those discourse functions.
+The model’s confidence scores remained low even on correct predictions, suggesting weak class separation and poor calibration. Confidence thresholding would therefore require additional calibration before it could be used reliably for human-review routing.
 
-The ~0.27–0.30 confidence on wrong predictions is a meaningful signal: the model *knows* it doesn't know. A deployed version should flag any prediction below ~0.45 confidence for human review.
+### Why the LLM Baseline Outperformed Fine-Tuning
 
-### Why the Baseline Won by 40 Points
-
-The zero-shot LLM (Groq) achieved 0.906 vs. the fine-tuned model's 0.500. Three reasons:
+The few-shot LLM (Groq) achieved 0.906 vs. the fine-tuned model's 0.500. Three reasons:
 
 1. **Scale advantage.** LLaMA-3.3-70B has 70 billion parameters trained on massive corpora and has seen far more examples of critique, meta-commentary, and help-seeking than DistilBERT could learn from 148 training examples.
 
 2. **Instruction-following.** The LLM could read and apply the decision rules directly from the prompt. DistilBERT has no equivalent mechanism — it learns only from labeled examples.
 
-3. **Dataset too small for the task complexity.** Distinguishing four discourse-level categories in short, vocabulary-overlapping posts likely requires at least 500–1000 examples per class for a small model to generalize. At ~37 training examples per class, DistilBERT overfit to the plurality class.
+3. **Dataset too small for the task complexity.** Distinguishing four discourse-level categories in short, vocabulary-overlapping posts likely requires substantially more labeled data and/or changes such as class weighting, additional conversational context, or a different modeling approach.
 
-This result doesn't mean fine-tuning is worthless — it means **200 examples is not enough for this particular task**, and the zero-shot LLM sets an unusually high bar for a community-specific classification problem.
+This result doesn’t mean fine-tuning is ineffective. In this experiment, 212 labeled examples were not sufficient for the fine-tuned DistilBERT model to outperform the few-shot LLM baseline.
 
 ### Sample Classifications
 
 | Post (truncated to 120 chars) | True | Predicted | Confidence |
 |---|---|---|---|
-| "It sounds like you are still increasing and that is why it is a pancake shape..." | technical_help | technical_help | ~0.85 |
-| "Wow! What a fabulous gift. It brought a huge smile to my face." | showcase_reaction | showcase_reaction | ~0.75 |
+| "It sounds like you are still increasing and that is why it is a pancake shape..." | technical_help | technical_help | ~0.28 |
+| "Wow! What a fabulous gift. It brought a huge smile to my face." | showcase_reaction | showcase_reaction | ~0.29 |
 | "I think you didn't quite manage the big shapes in the rock column..." | critique_feedback | technical_help | 0.28 |
 | "Should I add a disclaimer that I don't endorse the technique..." | meta_opinion | technical_help | 0.28 |
 
@@ -209,7 +208,7 @@ For the first correctly-predicted example: the prediction is reasonable because 
 
 **One way the spec helped:** The instruction to run the baseline *before* fine-tuning (Milestone 4 before Milestone 5) was genuinely valuable. Having the baseline number in hand before seeing the fine-tuned results made the comparison honest — I couldn't rationalize the fine-tuned model's performance after the fact. The 0.406 regression is stark and would have been tempting to explain away if I'd seen the fine-tuned results first.
 
-**One way implementation diverged from the spec:** The spec suggests the baseline is a useful lower bound to beat ("it tells you whether fine-tuning actually helped"). In practice, the baseline turned out to be an upper bound the fine-tuned model couldn't approach. The spec's framing assumes a capable zero-shot LLM will do worse than a fine-tuned small model on community-specific tasks — but when the task requires contextual discourse understanding and the fine-tuning dataset is small and imbalanced, that assumption doesn't hold. The real finding of this project is that 200 examples of this type of classification task is not enough to beat a 70B zero-shot model.
+**One way implementation diverged from the spec:** The spec suggests the baseline is a useful lower bound to beat ("it tells you whether fine-tuning actually helped"). In practice, the baseline turned out to be an upper bound the fine-tuned model couldn't approach. The spec’s framing assumes a capable prompted LLM baseline will do worse than a fine-tuned small model on community-specific tasks — but when the task requires contextual discourse understanding and the fine-tuning dataset is small and imbalanced, that assumption doesn't hold. In this experiment, 212 labeled examples were not enough for the fine-tuned DistilBERT model to outperform the 70B LLM baseline.
 
 ---
 
@@ -219,17 +218,18 @@ For the first correctly-predicted example: the prediction is reasonable because 
 
 **2. Data collection (collection phase):** Claude's web-search and web-fetch tools were used to identify and retrieve public WetCanvas and KnittingHelp forum threads. The tool fetched raw HTML and extracted post text; labeling was done manually against the taxonomy. Claude did not assign labels — it only retrieved the source material. Every source URL is recorded in the dataset CSV.
 
-**3. Failure analysis (evaluation phase):** After running the fine-tuned model, I pasted the 15 wrong predictions into Claude and asked it to identify patterns. It correctly identified the majority-class collapse and the question-mark / technical-vocabulary heuristics as the dominant failure modes. I verified both patterns by re-reading the examples myself and confirmed they held. The "confidence ~0.27–0.30 ≈ uniform distribution" observation was also surfaced in that conversation and informed the reflection section above.
+**3. Failure analysis (evaluation phase):** After running the fine-tuned model, I pasted the 16 wrong predictions into Claude and asked it to identify patterns. It correctly identified the majority-class collapse and the question-mark / technical-vocabulary heuristics as the dominant failure modes. I verified both patterns by re-reading the examples myself and confirmed they held. The "confidence ~0.27–0.30 ≈ uniform distribution" observation was also surfaced in that conversation and informed the reflection section above.
 
 ---
 
 ## Repository Structure
 
 ```
-ai201-project3-takemeter/
+takemeter/
 ├── README.md
 ├── planning.md
 ├── takemeter_dataset_combined.csv   # 212 labeled examples with source URLs
-├── takemeter_filled.ipynb           # Completed Colab notebook
+├── takemeter_experiment.ipynb       # Completed Colab notebook
 ├── evaluation_results.json          # Exported metrics
 └── confusion_matrix.png             # Confusion matrix image
+```
