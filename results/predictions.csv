@@ -1,0 +1,38 @@
+id,source_site,source_url,source_context,label,majority,tfidf_logistic_regression,distilbert,distilbert_weighted
+85,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,meta_opinion,technical_help,meta_opinion
+86,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,technical_help,technical_help,meta_opinion
+87,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,technical_help,technical_help,critique_feedback
+88,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,technical_help,technical_help,meta_opinion
+89,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,showcase_reaction,technical_help,showcase_reaction
+90,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,meta_opinion,technical_help,meta_opinion,technical_help,meta_opinion
+91,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,showcase_reaction,technical_help,critique_feedback
+92,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,meta_opinion,technical_help,meta_opinion
+93,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,technical_help,technical_help,critique_feedback
+94,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,technical_help,technical_help,technical_help
+95,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,technical_help,technical_help,critique_feedback
+96,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,technical_help,technical_help,technical_help,technical_help,critique_feedback
+97,KnittingHelp,https://forum.knittinghelp.com/t/crochet-tension/162634,Crochet tension,showcase_reaction,technical_help,meta_opinion,technical_help,showcase_reaction
+129,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,critique_feedback,technical_help,showcase_reaction,technical_help,meta_opinion
+130,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,critique_feedback,technical_help,technical_help,technical_help,meta_opinion
+131,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,critique_feedback,technical_help,showcase_reaction,technical_help,meta_opinion
+132,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,critique_feedback,technical_help,technical_help,technical_help,meta_opinion
+133,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,showcase_reaction,technical_help,meta_opinion,technical_help,critique_feedback
+134,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,showcase_reaction,technical_help,technical_help,technical_help,technical_help
+135,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,showcase_reaction,technical_help,critique_feedback,technical_help,meta_opinion
+136,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,showcase_reaction,technical_help,showcase_reaction,technical_help,meta_opinion
+137,WetCanvas,https://www.wetcanvas.com/forums/forum/the-wetcanvas-galleria/open-critique-forum/,Open Critique Forum listing,showcase_reaction,technical_help,meta_opinion,technical_help,meta_opinion
+138,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,meta_opinion,technical_help,meta_opinion,technical_help,meta_opinion
+139,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,technical_help,technical_help,showcase_reaction,technical_help,meta_opinion
+140,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,critique_feedback,technical_help,technical_help,technical_help,meta_opinion
+141,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,technical_help,technical_help,meta_opinion,technical_help,critique_feedback
+142,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,showcase_reaction,technical_help,showcase_reaction,technical_help,meta_opinion
+143,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,technical_help,technical_help,technical_help,technical_help,meta_opinion
+144,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,critique_feedback,technical_help,meta_opinion,technical_help,meta_opinion
+145,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,technical_help,technical_help,meta_opinion,technical_help,meta_opinion
+146,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,technical_help,technical_help,technical_help,technical_help,meta_opinion
+147,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,showcase_reaction,technical_help,technical_help,technical_help,critique_feedback
+148,WetCanvas,https://www.wetcanvas.com/forums/forum/explore-media/watercolor/,Watercolor forum listing,showcase_reaction,technical_help,technical_help,technical_help,technical_help
+189,WetCanvas,https://www.wetcanvas.com/forums/topic/analyzing-and-evaluating-paintings/,Analyzing and Evaluating Paintings,meta_opinion,technical_help,meta_opinion,technical_help,meta_opinion
+190,WetCanvas,https://www.wetcanvas.com/forums/topic/analyzing-and-evaluating-paintings/,Analyzing and Evaluating Paintings,meta_opinion,technical_help,meta_opinion,technical_help,meta_opinion
+191,WetCanvas,https://www.wetcanvas.com/forums/topic/analyzing-and-evaluating-paintings/,Analyzing and Evaluating Paintings,meta_opinion,technical_help,technical_help,technical_help,meta_opinion
+192,WetCanvas,https://www.wetcanvas.com/forums/topic/analyzing-and-evaluating-paintings/,Analyzing and Evaluating Paintings,meta_opinion,technical_help,technical_help,technical_help,meta_opinion
