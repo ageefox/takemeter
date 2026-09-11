@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+import pandas as pd
+
 from takemeter.data import load_data
 from takemeter.models import evaluate_majority, evaluate_tfidf
 from takemeter.reporting import write_results
@@ -16,8 +18,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--models",
         nargs="+",
-        choices=("majority", "tfidf", "distilbert"),
-        default=("majority", "tfidf", "distilbert"),
+        choices=("majority", "tfidf", "distilbert", "distilbert_weighted"),
+        default=("majority", "tfidf", "distilbert", "distilbert_weighted"),
     )
     parser.add_argument("--epochs", type=int, default=3)
     return parser.parse_args()
@@ -40,14 +42,30 @@ def main() -> None:
     if "distilbert" in args.models:
         from takemeter.transformer import evaluate_distilbert
 
+        development = pd.concat(
+            [splits.train, splits.validation], ignore_index=True
+        )
         transformer, history = evaluate_distilbert(
-            splits.train,
-            splits.validation,
+            development,
             splits.test,
             epochs=args.epochs,
         )
         results.append(transformer)
         details["distilbert_training"] = history
+    if "distilbert_weighted" in args.models:
+        from takemeter.transformer import evaluate_distilbert
+
+        development = pd.concat(
+            [splits.train, splits.validation], ignore_index=True
+        )
+        transformer, history = evaluate_distilbert(
+            development,
+            splits.test,
+            epochs=args.epochs,
+            class_weighted=True,
+        )
+        results.append(transformer)
+        details["distilbert_weighted_training"] = history
 
     write_results(args.output_dir, args.data, splits, results, details)
     for result in results:

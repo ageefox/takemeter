@@ -5,6 +5,9 @@ import json
 import platform
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import classification_report, confusion_matrix
@@ -108,4 +111,3 @@ def write_results(
         fig.tight_layout()
         fig.savefig(output_dir / f"confusion_matrix_{result.name}.png", dpi=160)
         plt.close(fig)
-
