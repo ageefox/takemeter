@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
 import platform
 from pathlib import Path
@@ -15,6 +16,14 @@ from sklearn.metrics import classification_report, confusion_matrix
 from takemeter.data import LABELS
 from takemeter.models import ModelResult
 from takemeter.splits import DatasetSplits
+
+
+DISPLAY_NAMES = {
+    "majority": "Majority baseline",
+    "tfidf_logistic_regression": "TF–IDF + logistic regression",
+    "distilbert": "DistilBERT",
+    "distilbert_weighted": "DistilBERT + class weights",
+}
 
 
 def _sha256(path: Path) -> str:
@@ -82,12 +91,25 @@ def write_results(
         "models": {result.name: result.parameters for result in results},
         "details": details,
         "python": platform.python_version(),
+        "packages": {
+            package: importlib.metadata.version(package)
+            for package in (
+                "matplotlib",
+                "numpy",
+                "pandas",
+                "scikit-learn",
+                "torch",
+                "transformers",
+            )
+            if _package_is_installed(package)
+        },
     }
     (output_dir / "run.json").write_text(json.dumps(run, indent=2) + "\n")
 
-    comparison = metrics.sort_values("macro_f1", ascending=True)
+    comparison = metrics.sort_values("macro_f1", ascending=True).copy()
+    comparison["display_name"] = comparison["model"].map(DISPLAY_NAMES)
     fig, axis = plt.subplots(figsize=(8, 4.5))
-    axis.barh(comparison["model"], comparison["macro_f1"], color="#4472C4")
+    axis.barh(comparison["display_name"], comparison["macro_f1"], color="#4472C4")
     axis.set(xlabel="Macro F1", xlim=(0, 1), title="Unseen-thread test performance")
     for index, value in enumerate(comparison["macro_f1"]):
         axis.text(value + 0.015, index, f"{value:.3f}", va="center")
@@ -103,7 +125,11 @@ def write_results(
         image = axis.imshow(matrix, cmap="Blues")
         axis.set_xticks(range(len(LABELS)), LABELS, rotation=30, ha="right")
         axis.set_yticks(range(len(LABELS)), LABELS)
-        axis.set(xlabel="Predicted", ylabel="Actual", title=result.name.replace("_", " ").title())
+        axis.set(
+            xlabel="Predicted",
+            ylabel="Actual",
+            title=DISPLAY_NAMES[result.name],
+        )
         for row in range(len(LABELS)):
             for column in range(len(LABELS)):
                 axis.text(column, row, matrix[row, column], ha="center", va="center")
@@ -111,3 +137,11 @@ def write_results(
         fig.tight_layout()
         fig.savefig(output_dir / f"confusion_matrix_{result.name}.png", dpi=160)
         plt.close(fig)
+
+
+def _package_is_installed(package: str) -> bool:
+    try:
+        importlib.metadata.version(package)
+    except importlib.metadata.PackageNotFoundError:
+        return False
+    return True

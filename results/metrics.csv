@@ -1,0 +1,5 @@
+model,accuracy,macro_f1,weighted_f1
+majority,0.432432,0.150943,0.261091
+tfidf_logistic_regression,0.405405,0.309975,0.368755
+distilbert,0.432432,0.150943,0.261091
+distilbert_weighted,0.216216,0.171770,0.154610
