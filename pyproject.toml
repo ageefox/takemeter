@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "takemeter"
+version = "1.0.0"
+description = "Thread-held-out benchmark for classifying discourse in art and craft forums"
+requires-python = ">=3.11"
+dependencies = [
+  "matplotlib>=3.9,<4",
+  "numpy>=2,<3",
+  "pandas>=2.2,<3",
+  "scikit-learn>=1.5,<2",
+]
+
+[project.optional-dependencies]
+transformer = [
+  "torch>=2.4,<3",
+  "transformers>=4.45,<6",
+]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+takemeter-benchmark = "takemeter.benchmark:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
