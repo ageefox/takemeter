@@ -13,10 +13,17 @@ def test_repository_dataset_satisfies_contract():
     assert frame["source_url"].nunique() == 28
 
 
-def test_duplicate_ids_are_rejected(tmp_path):
+@pytest.mark.parametrize(
+    ("ids", "message"),
+    [
+        ([1, 1, 3, 4], "IDs must be unique"),
+        ([1, 2.5, 3, 4], "IDs must be integers"),
+    ],
+)
+def test_invalid_ids_are_rejected(tmp_path, ids, message):
     frame = pd.DataFrame(
         {
-            "id": [1, 1, 3, 4],
+            "id": ids,
             "text": ["text"] * 4,
             "label": list(LABELS),
             "source_site": ["site"] * 4,
@@ -24,8 +31,8 @@ def test_duplicate_ids_are_rejected(tmp_path):
             "source_context": ["thread"] * 4,
         }
     )
-    path = tmp_path / "duplicate.csv"
+    path = tmp_path / "invalid-ids.csv"
     frame.to_csv(path, index=False)
 
-    with pytest.raises(ValueError, match="IDs must be unique"):
+    with pytest.raises(ValueError, match=message):
         load_data(path)
